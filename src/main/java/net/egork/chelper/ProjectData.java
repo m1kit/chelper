@@ -16,7 +16,7 @@ import java.util.Properties;
 public class ProjectData {
     public static final ProjectData DEFAULT = new ProjectData(
             "java.util.Scanner", "java.io.PrintWriter", "java.,javax.,com.sun.".split(","), "output", "",
-            "archive/unsorted", "main", "lib/test", false, false, 0, true, false);
+            "archive/unsorted", "main", "lib/test", "", false, false, 0, true, false);
     public static final int CURRENT_LIBRARY_VERSION = 2;
 
     public final String inputClass;
@@ -27,13 +27,14 @@ public class ProjectData {
     public final String archiveDirectory;
     public final String defaultDirectory;
     public final String testDirectory;
+    public final String jwsDirectory;
     public final boolean enableUnitTests;
     public final boolean failOnIntegerOverflowForNewTasks;
     public final int libraryVersion;
     public final boolean smartTesting;
     public final boolean extensionProposed;
 
-    public ProjectData(String inputClass, String outputClass, String[] excludedPackages, String outputDirectory, String author, String archiveDirectory, String defaultDirectory, String testDirectory, boolean enableUnitTests, boolean failOnIntegerOverflowForNewTasks, int libraryVersion, boolean smartTesting, boolean extensionProposed) {
+    public ProjectData(String inputClass, String outputClass, String[] excludedPackages, String outputDirectory, String author, String archiveDirectory, String defaultDirectory, String testDirectory, String jwsDirectory, boolean enableUnitTests, boolean failOnIntegerOverflowForNewTasks, int libraryVersion, boolean smartTesting, boolean extensionProposed) {
         this.extensionProposed = extensionProposed;
         this.inputClass = inputClass.trim();
         this.outputClass = outputClass.trim();
@@ -43,6 +44,7 @@ public class ProjectData {
         this.archiveDirectory = archiveDirectory.trim();
         this.defaultDirectory = defaultDirectory.trim();
         this.testDirectory = testDirectory.trim();
+        this.jwsDirectory = jwsDirectory;
         this.enableUnitTests = enableUnitTests;
         this.failOnIntegerOverflowForNewTasks = failOnIntegerOverflowForNewTasks;
         this.libraryVersion = libraryVersion;
@@ -58,6 +60,7 @@ public class ProjectData {
         archiveDirectory = properties.getProperty("archiveDirectory", DEFAULT.archiveDirectory);
         defaultDirectory = properties.getProperty("defaultDirectory", DEFAULT.defaultDirectory);
         testDirectory = properties.getProperty("testDirectory", DEFAULT.testDirectory);
+        jwsDirectory = properties.getProperty("jwsDirectory", DEFAULT.jwsDirectory);
         enableUnitTests = Boolean.valueOf(properties.getProperty("enableUnitTests", Boolean.toString(DEFAULT.enableUnitTests)));
         failOnIntegerOverflowForNewTasks = Boolean.valueOf(properties.getProperty("failOnIntegerOverflowForNewTasks", Boolean.toString(DEFAULT.enableUnitTests)));
         libraryVersion = Integer.valueOf(properties.getProperty("libraryVersion",
@@ -106,6 +109,7 @@ public class ProjectData {
                     properties.setProperty("archiveDirectory", archiveDirectory);
                     properties.setProperty("defaultDirectory", defaultDirectory);
                     properties.setProperty("testDirectory", testDirectory);
+                    properties.setProperty("jwsDirectory", jwsDirectory);
                     properties.setProperty("enableUnitTests", Boolean.toString(enableUnitTests));
                     properties.setProperty("failOnIntegerOverflowForNewTasks", Boolean.toString(failOnIntegerOverflowForNewTasks));
                     properties.setProperty("libraryVersion", Integer.toString(libraryVersion));
@@ -134,14 +138,14 @@ public class ProjectData {
 
     public void completeMigration(Project project) {
         ProjectData newData = new ProjectData(inputClass, outputClass, excludedPackages, outputDirectory, author,
-                archiveDirectory, defaultDirectory, testDirectory, enableUnitTests, failOnIntegerOverflowForNewTasks, CURRENT_LIBRARY_VERSION, smartTesting, extensionProposed);
+                archiveDirectory, defaultDirectory, testDirectory, jwsDirectory, enableUnitTests, failOnIntegerOverflowForNewTasks, CURRENT_LIBRARY_VERSION, smartTesting, extensionProposed);
         newData.save(project);
         Utilities.addProjectData(project, newData);
     }
 
     public void completeExtensionProposal(Project project) {
         ProjectData newData = new ProjectData(inputClass, outputClass, excludedPackages, outputDirectory, author,
-                archiveDirectory, defaultDirectory, testDirectory, enableUnitTests, failOnIntegerOverflowForNewTasks, libraryVersion, smartTesting, true);
+                archiveDirectory, defaultDirectory, testDirectory, jwsDirectory, enableUnitTests, failOnIntegerOverflowForNewTasks, libraryVersion, smartTesting, true);
         newData.save(project);
         Utilities.addProjectData(project, newData);
     }

@@ -48,7 +48,12 @@ public class TopCoderAction extends AnAction {
         if (arenaFileName == null) {
             return;
         }
-        String javaExecutable = System.getProperty("java.home") + File.separator + "bin" + File.separator + "javaws";
+        String javaExecutable;
+        if ("".equals(Utilities.getData(project).jwsDirectory)) {
+            javaExecutable = System.getProperty("java.home") + File.separator + "bin" + File.separator + "javaws";
+        } else {
+            javaExecutable = Utilities.getData(project).jwsDirectory + File.separator + "javaws";
+        }
         try {
             new ProcessBuilder(javaExecutable, arenaFileName).start();
         } catch (IOException ex) {

@@ -82,4 +82,8 @@ public class DirectorySelector extends JPanel {
     public String getText() {
         return textField.getText();
     }
+
+    public void setText(String t) {
+        textField.setText(t);
+    }
 }
