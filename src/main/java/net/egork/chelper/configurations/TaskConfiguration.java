@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * @author Egor Kulikov (kulikov@devexperts.com)
  */
-public class TaskConfiguration extends ModuleBasedConfiguration<JavaRunConfigurationModule, Void> {
+public class TaskConfiguration extends ModuleBasedConfiguration<JavaRunConfigurationModule, Element> {
     private Task configuration;
 
     public TaskConfiguration(String name, Project project, Task configuration, ConfigurationFactory factory) {
