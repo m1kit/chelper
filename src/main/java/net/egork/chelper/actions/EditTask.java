@@ -14,35 +14,25 @@ import net.egork.chelper.ui.CreateTaskDialog;
 import net.egork.chelper.ui.EditTCDialog;
 import net.egork.chelper.util.FileUtilities;
 import net.egork.chelper.util.Utilities;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author egorku@yandex-team.ru
  */
-public class EditTask extends AnAction {
-    public void actionPerformed(AnActionEvent e) {
-        if (!Utilities.isEligible(e.getDataContext())) {
-            return;
-        }
-        Project project = Utilities.getProject(e.getDataContext());
-        RunnerAndConfigurationSettings selectedConfiguration =
-                RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
-        if (selectedConfiguration == null) {
-            return;
-        }
-        RunConfiguration configuration = selectedConfiguration.getConfiguration();
-        if (configuration instanceof TaskConfiguration) {
-            TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
-            Task task = taskConfiguration.getConfiguration();
-            task = CreateTaskDialog.showDialog(
-                    FileUtilities.getPsiDirectory(project, task.location), task.name, task, false);
-            if (task != null) {
-                taskConfiguration.setConfiguration(task);
-            }
-        }
-        if (configuration instanceof TopCoderConfiguration) {
-            TopCoderConfiguration taskConfiguration = (TopCoderConfiguration) configuration;
-            TopCoderTask task = taskConfiguration.getConfiguration();
-            taskConfiguration.setConfiguration(EditTCDialog.show(project, task));
-        }
-    }
+public class EditTask extends TaskBasedAction {
+	@Override
+	public void taskActionPerformed(@NotNull AnActionEvent e, TaskConfiguration configuration) {
+		Project project = Utilities.getProject(e.getDataContext());
+		Task task = configuration.getConfiguration();
+		task = CreateTaskDialog.showDialog(
+			FileUtilities.getPsiDirectory(project, task.location), task.name, task, false);
+		if (task != null) configuration.setConfiguration(task);
+	}
+
+	@Override
+	public void topCoderActionPerformed(@NotNull AnActionEvent e, TopCoderConfiguration configuration) {
+		Project project = Utilities.getProject(e.getDataContext());
+		TopCoderTask task = configuration.getConfiguration();
+		configuration.setConfiguration(EditTCDialog.show(project, task));
+	}
 }

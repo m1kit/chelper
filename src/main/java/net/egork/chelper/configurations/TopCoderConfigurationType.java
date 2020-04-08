@@ -14,39 +14,56 @@ import javax.swing.*;
  * @author Egor Kulikov (kulikov@devexperts.com)
  */
 public class TopCoderConfigurationType implements ConfigurationType {
+
+    private static TopCoderConfigurationType INSTANCE;
+
     private static final Icon ICON = IconLoader.getIcon("/icons/topcoder.png");
     private final ConfigurationFactory factory;
-    public static TopCoderConfigurationType INSTANCE;
 
-    public TopCoderConfigurationType() {
+    private TopCoderConfigurationType() {
         factory = new ConfigurationFactory(this) {
+            @NotNull
             @Override
-            public RunConfiguration createTemplateConfiguration(Project project) {
+            public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
                 return new TopCoderConfiguration("TopCoderTask", project,
                         new TopCoderTask("TopCoderTask", null, null, "", "", new String[0], null, false, "256M"), factory);
             }
         };
-        INSTANCE = this;
     }
 
+    @Override
+    @NotNull
     public String getDisplayName() {
         return "TopCoder Task";
     }
 
+    @Override
     public String getConfigurationTypeDescription() {
         return "CHelper TopCoder Task";
     }
 
+    @Override
     public Icon getIcon() {
         return ICON;
     }
 
+    @Override
     @NotNull
     public String getId() {
         return "TopCoderTask";
     }
 
+    public ConfigurationFactory getConfigurationFactory() {
+        return factory;
+    }
+
+    @Override
     public ConfigurationFactory[] getConfigurationFactories() {
         return new ConfigurationFactory[]{factory};
+    }
+
+    public static TopCoderConfigurationType getInstance() {
+        if (INSTANCE == null) INSTANCE = new TopCoderConfigurationType();
+        return INSTANCE;
     }
 }

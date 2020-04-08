@@ -14,38 +14,55 @@ import javax.swing.*;
  * @author Egor Kulikov (kulikov@devexperts.com)
  */
 public class TaskConfigurationType implements ConfigurationType {
+
+    private static TaskConfigurationType INSTANCE;
+
     private static final Icon ICON = IconLoader.getIcon("/icons/taskIcon.png");
     private final ConfigurationFactory factory;
-    public static TaskConfigurationType INSTANCE;
 
-    public TaskConfigurationType() {
+    private TaskConfigurationType() {
         factory = new ConfigurationFactory(this) {
+            @NotNull
             @Override
-            public RunConfiguration createTemplateConfiguration(Project project) {
+            public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
                 return new TaskConfiguration("Task", project, Utilities.getDefaultTask(), factory);
             }
         };
-        INSTANCE = this;
     }
 
+    @Override
+    @NotNull
     public String getDisplayName() {
         return "Task";
     }
 
+    @Override
     public String getConfigurationTypeDescription() {
         return "CHelper Task";
     }
 
+    @Override
     public Icon getIcon() {
         return ICON;
     }
 
+    @Override
     @NotNull
     public String getId() {
         return "Task";
     }
 
+    public ConfigurationFactory getConfigurationFactory() {
+        return factory;
+    }
+
+    @Override
     public ConfigurationFactory[] getConfigurationFactories() {
         return new ConfigurationFactory[]{factory};
+    }
+
+    public static TaskConfigurationType getInstance() {
+        if (INSTANCE == null) INSTANCE = new TaskConfigurationType();
+        return INSTANCE;
     }
 }

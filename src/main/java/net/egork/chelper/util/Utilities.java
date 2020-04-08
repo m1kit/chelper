@@ -43,6 +43,7 @@ import net.egork.chelper.configurations.TopCoderConfigurationType;
 import net.egork.chelper.parser.Parser;
 import net.egork.chelper.task.*;
 import net.egork.chelper.tester.NewTester;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,7 +67,7 @@ public class Utilities {
     public static void addListeners() {
         ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
             @Override
-            public void projectOpened(Project project) {
+            public void projectOpened(@NotNull Project project) {
                 ProjectData configuration = ProjectData.load(project);
                 if (configuration != null) {
                     eligibleProjects.put(project, configuration);
@@ -82,7 +83,7 @@ public class Utilities {
             }
 
             @Override
-            public void projectClosed(Project project) {
+            public void projectClosed(@NotNull Project project) {
                 eligibleProjects.remove(project);
             }
         });
@@ -187,7 +188,7 @@ public class Utilities {
         }
         RunnerAndConfigurationSettingsImpl configuration = new RunnerAndConfigurationSettingsImpl(manager,
                 new TaskConfiguration(task.name, project, task,
-                        TaskConfigurationType.INSTANCE.getConfigurationFactories()[0]), false);
+                        TaskConfigurationType.getInstance().getConfigurationFactory()), false);
         manager.addConfiguration(configuration, false);
         if (setActive) {
             manager.setActiveConfiguration(configuration);
@@ -229,7 +230,7 @@ public class Utilities {
         }
         RunnerAndConfigurationSettingsImpl configuration = new RunnerAndConfigurationSettingsImpl(manager,
                 new TopCoderConfiguration(task.name, project, task,
-                        TopCoderConfigurationType.INSTANCE.getConfigurationFactories()[0]), false);
+                        TopCoderConfigurationType.getInstance().getConfigurationFactory()), false);
         manager.addConfiguration(configuration, false);
         if (setActive) {
             manager.setActiveConfiguration(configuration);

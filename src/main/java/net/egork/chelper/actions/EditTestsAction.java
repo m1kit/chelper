@@ -13,31 +13,23 @@ import net.egork.chelper.task.TopCoderTask;
 import net.egork.chelper.ui.EditTestsDialog;
 import net.egork.chelper.ui.TopCoderEditTestsDialog;
 import net.egork.chelper.util.Utilities;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Egor Kulikov (kulikov@devexperts.com)
  */
-public class EditTestsAction extends AnAction {
-    public void actionPerformed(AnActionEvent e) {
-        if (!Utilities.isEligible(e.getDataContext())) {
-            return;
-        }
-        Project project = Utilities.getProject(e.getDataContext());
-        RunnerAndConfigurationSettings selectedConfiguration =
-                RunManagerImpl.getInstanceImpl(project).getSelectedConfiguration();
-        if (selectedConfiguration == null) {
-            return;
-        }
-        RunConfiguration configuration = selectedConfiguration.getConfiguration();
-        if (configuration instanceof TaskConfiguration) {
-            TaskConfiguration taskConfiguration = (TaskConfiguration) configuration;
-            Task task = taskConfiguration.getConfiguration();
-            taskConfiguration.setConfiguration(task.setTests(EditTestsDialog.editTests(task.tests, project)));
-        }
-        if (configuration instanceof TopCoderConfiguration) {
-            TopCoderConfiguration taskConfiguration = (TopCoderConfiguration) configuration;
-            TopCoderTask task = taskConfiguration.getConfiguration();
-            taskConfiguration.setConfiguration(task.setTests(TopCoderEditTestsDialog.editTests(task, project)));
-        }
-    }
+public class EditTestsAction extends TaskBasedAction {
+	@Override
+	public void taskActionPerformed(@NotNull AnActionEvent e, TaskConfiguration configuration) {
+		Project project = Utilities.getProject(e.getDataContext());
+		Task task = configuration.getConfiguration();
+		configuration.setConfiguration(task.setTests(EditTestsDialog.editTests(task.tests, project)));
+	}
+
+	@Override
+	public void topCoderActionPerformed(@NotNull AnActionEvent e, TopCoderConfiguration configuration) {
+		Project project = Utilities.getProject(e.getDataContext());
+		TopCoderTask task = configuration.getConfiguration();
+		configuration.setConfiguration(task.setTests(TopCoderEditTestsDialog.editTests(task, project)));
+	}
 }
