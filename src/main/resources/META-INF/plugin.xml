@@ -5,6 +5,8 @@
     <vendor>Egor Kulikov</vendor>
     <idea-version since-build="172.2103.15"/>
 
+    <depends>com.intellij.modules.java</depends>
+
     <application-components>
         <!-- Add your application components here -->
         <component>
