@@ -15,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,9 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +31,6 @@ import java.util.function.Supplier;
  */
 public class ChromeParser implements ProjectComponent {
 	private static final int PORT = 4243;
-	private static final Map<String, Parser> TASK_PARSERS;
 
 
 	private final Project project;
@@ -82,9 +76,9 @@ public class ChromeParser implements ProjectComponent {
 							builder.append(s).append('\n');
 						final String page = builder.toString();
 						ExecuteUtils.executeStrictWriteAction(() -> {
-							if (TASK_PARSERS.containsKey(type)) {
-								System.err.println(page);
-								Collection<Task> tasks = TASK_PARSERS.get(type).parseTaskFromHTML(page);
+							try {
+								TaskParser parser = TaskParser.valueOf(type.toUpperCase());
+								Collection<Task> tasks = parser.getInstance().parse(page);
 								if (tasks.isEmpty()) {
 									Messenger.publishMessage("Unable to parse task from " + type, NotificationType.WARNING);
 									return;
@@ -99,7 +93,7 @@ public class ChromeParser implements ProjectComponent {
 										() -> NewTaskDefaultAction.createTaskInDefaultDirectory(project, task)
 									);
 								}
-							} else {
+							} catch(IllegalArgumentException ex) {
 								Messenger.publishMessage("Unknown task type from Chrome parser: " + type,
 									NotificationType.WARNING);
 								System.err.println(page);
@@ -158,47 +152,13 @@ public class ChromeParser implements ProjectComponent {
 		}
 	}
 
-	static {
-		Map<String, Parser> taskParsers = new HashMap<String, Parser>();
-		taskParsers.put("yandex", new YandexParser());
-		taskParsers.put("codeforces", new CodeforcesParser());
-		taskParsers.put("hackerrank", new HackerRankParser());
-		taskParsers.put("facebook", new FacebookParser());
-		taskParsers.put("usaco", new UsacoParser());
-		taskParsers.put("gcj", new GCJParser());
-		taskParsers.put("bayan", new BayanParser());
-		taskParsers.put("kattis", new KattisParser());
-		taskParsers.put("codechef", new CodeChefParser());
-		taskParsers.put("hackerearth", new HackerEarthParser());
-		taskParsers.put("atcoder", new AtCoderParser());
-		taskParsers.put("csacademy", new CSAcademyParser());
-		taskParsers.put("new-gcj", new NewGCJParser());
-		taskParsers.put("gcj3", new GCJ3Parser());
-		taskParsers.put("json", new JSONParser());
-		TASK_PARSERS = Collections.unmodifiableMap(taskParsers);
-	}
-
-	private enum TaskParsers {
-		YANDEX(YandexParser::new),
-		CODEFORCES(CodeforcesParser::new),
-		HACKERRANK(HackerRankParser::new),
-		FACEBOOK(FacebookParser::new),
-		USACO(UsacoParser::new),
-		GCJ(GCJParser::new),
-		GCJ3(GCJ3Parser::new),
-		BAYAN(BayanParser::new),
-		KATTIS(KattisParser::new),
-		CODECHEF(CodeChefParser::new),
-		HACKEREARTH(HackerEarthParser::new),
-		ATCODER(AtCoderParser::new),
-		CSACADEMY(CSAcademyParser::new),
-		NEW_GCJ(NewGCJParser::new),
+	private enum TaskParser {
 		JSON(JSONParser::new),
 		;
 		private final Supplier<Parser> constructor;
 		private Parser parser;
 
-		TaskParsers(Supplier<Parser> constructor) {
+		TaskParser(Supplier<Parser> constructor) {
 			this.constructor = constructor;
 		}
 

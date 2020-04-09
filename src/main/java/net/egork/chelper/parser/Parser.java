@@ -10,19 +10,13 @@ import java.util.Collection;
  * @author Egor Kulikov (kulikov@devexperts.com)
  */
 public interface Parser {
-    public static final Parser[] PARSERS = {new CodeforcesParser(), new TimusParser()};
+	default String getName() {
+		return this.getClass().getSimpleName().replace("Parser", "");
+	}
 
-    public Icon getIcon();
+	default TestType defaultTestType() {
+		return TestType.SINGLE;
+	}
 
-    public String getName();
-
-    public void getContests(DescriptionReceiver receiver);
-
-    public void parseContest(String id, DescriptionReceiver receiver);
-
-    public Task parseTask(Description description);
-
-    public TestType defaultTestType();
-
-    public Collection<Task> parseTaskFromHTML(String html);
+	Collection<Task> parse(String content);
 }
