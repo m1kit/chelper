@@ -273,8 +273,13 @@ public class NewTester {
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         Object solver = taskClass.getConstructor().newInstance();
         Method solve = taskClass.getMethod("solve", int.class, readerClass, writerClass);
+        Method flush = null;
+        try {
+            flush = writerClass.getMethod("flush");
+        } catch (ReflectiveOperationException ignored) {}
         if (testType == TestType.SINGLE) {
             solve.invoke(solver, 1, in, out);
+            if (flush != null) flush.invoke(out);
             return;
         }
         if (testType == TestType.MULTI_EOF) {
@@ -285,6 +290,7 @@ public class NewTester {
                     solve.invoke(solver, testIndex++, in, out);
             } catch (InvocationTargetException e) {
                 if (e.getCause() instanceof UnknownError) {
+                    if (flush != null) flush.invoke(out);
                     return;
                 }
                 throw e;
@@ -296,6 +302,7 @@ public class NewTester {
             int count = Integer.parseInt(testCount);
             for (int i = 0; i < count; i++)
                 solve.invoke(solver, i + 1, in, out);
+            if (flush != null) flush.invoke(out);
         }
     }
 
