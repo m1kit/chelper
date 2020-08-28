@@ -448,7 +448,7 @@ public class SolutionGenerator {
         StringBuilder builder = new StringBuilder();
         builder.append("%IMPORTS%\n");
         builder.append("/**\n" +
-                " * Built using CHelper plug-in\n" +
+                " * Built using CHelper reloaded plug-in\n" +
                 " * Actual solution is at the top\n");
         String author = Utilities.getData(project).author;
         if (!author.isEmpty()) {
